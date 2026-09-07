@@ -11,8 +11,8 @@
 
 ### 2. Phone Number Update
 - Update phone number with OTP verification
-- SMS fallback: `FUEL QR [Vehicle No]` to `076 622 0000`
-- Balance check: `FUEL BAL [Vehicle No]` to `076 622 0000`
+- SMS fallback: `FUEL QR [Vehicle No]` to `xxx xxx xxxx`
+- Balance check: `FUEL BAL [Vehicle No]` to `xxx xxx xxxx`
 
 ### 3. Complaint Management
 - Submit complaint with category selection
