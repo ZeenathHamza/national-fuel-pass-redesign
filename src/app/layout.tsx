@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Layout from "@/components/common/Layout";
+import { Toaster } from "react-hot-toast";
 
-// Configure the Inter font properly
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter", // Optional: for CSS custom property
-  weight: ["400", "500", "600", "700", "800"], // Specify weights you need
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -22,7 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body>{children}</body>
+      <body>
+        <Layout>
+          {children}
+        </Layout>
+        <Toaster position="top-right" />
+      </body>
     </html>
   );
 }

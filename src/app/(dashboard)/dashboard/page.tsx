@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
   Fuel, Calendar, History, QrCode, ChevronRight, 
-  Bell, LogOut, Settings, AlertCircle, Plus 
+  AlertCircle, Plus 
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -27,7 +27,6 @@ export default function DashboardPage() {
     const userData = JSON.parse(loggedIn)
     setUser(userData)
     
-    // Check if vehicles exists
     if (!userData.vehicles || !Array.isArray(userData.vehicles) || userData.vehicles.length === 0) {
       const defaultVehicle = {
         id: 'v1',
@@ -44,7 +43,6 @@ export default function DashboardPage() {
       localStorage.setItem('fuelPassUser', JSON.stringify(userData))
     }
     
-    // Check for pending request status
     const pendingRequest = localStorage.getItem('pendingVehicleRequest')
     if (pendingRequest) {
       setRequestStatus(JSON.parse(pendingRequest).status)
@@ -94,58 +92,9 @@ export default function DashboardPage() {
     }, 800)
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('fuelPassUser')
-    toast.success('Logged out successfully')
-    router.push('/login')
-  }
-
   return (
-    <main className="min-h-screen bg-slate-900 pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
-              <Fuel size={20} className="text-yellow-500" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-white">Fuel Pass</h1>
-              <p className="text-xs text-slate-400">{activeVehicle.number}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-full hover:bg-slate-800 transition-colors">
-              <Bell size={20} className="text-slate-400" />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
-            </button>
-            <button
-              onClick={handleLogout}
-              className="p-2 rounded-full hover:bg-slate-800 transition-colors"
-            >
-              <LogOut size={20} className="text-slate-400" />
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <main className="min-h-screen bg-slate-900 pb-20 pt-4">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Welcome */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
-        >
-          <div>
-            <h2 className="text-2xl font-bold text-white">Welcome back, {user.name} 👋</h2>
-            <p className="text-sm text-slate-400">One active vehicle • {activeVehicle.type}</p>
-          </div>
-          <div className="bg-slate-800/50 rounded-lg px-4 py-2 text-xs text-slate-400 inline-flex items-center gap-2 border border-slate-700">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            Quota resets in 5 days
-          </div>
-        </motion.div>
-
         {/* Request Status Banner (if pending) */}
         {requestStatus && (
           <motion.div
@@ -168,6 +117,22 @@ export default function DashboardPage() {
             </div>
           </motion.div>
         )}
+
+        {/* Welcome */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+        >
+          <div>
+            <h2 className="text-2xl font-bold text-white">Welcome back, {user.name} 👋</h2>
+            <p className="text-sm text-slate-400">Active Vehicle: {activeVehicle.number} ({activeVehicle.type})</p>
+          </div>
+          <div className="bg-slate-800/50 rounded-lg px-4 py-2 text-xs text-slate-400 inline-flex items-center gap-2 border border-slate-700">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            Quota resets in 5 days
+          </div>
+        </motion.div>
 
         {/* Active Vehicle Card */}
         <motion.div
@@ -228,7 +193,7 @@ export default function DashboardPage() {
             { icon: QrCode, label: 'Show QR', onClick: () => router.push('/qr-viewer'), color: 'bg-yellow-500/10 text-yellow-500' },
             { icon: Calendar, label: 'Eligibility', onClick: () => {}, color: 'bg-blue-500/10 text-blue-500' },
             { icon: History, label: 'History', onClick: () => {}, color: 'bg-green-500/10 text-green-500' },
-            { icon: Settings, label: 'Settings', onClick: () => {}, color: 'bg-purple-500/10 text-purple-500' },
+            { icon: Fuel, label: 'Dispenser', onClick: () => {}, color: 'bg-purple-500/10 text-purple-500' },
           ].map((item, i) => (
             <motion.button
               key={i}
@@ -325,8 +290,8 @@ export default function DashboardPage() {
               <h4 className="text-sm font-semibold text-yellow-400">Request New Vehicle</h4>
               <p className="text-xs text-slate-400 mt-1">
                 You can only have <span className="text-white font-medium">one active vehicle</span> at a time. 
-                When you submit a request for a new vehicle, your current vehicle ({activeVehicle.number}) will be 
-                <span className="text-yellow-400 font-medium"> automatically disabled once approved</span> by an admin.
+                When you request a new vehicle, your current vehicle ({activeVehicle.number}) will be 
+                <span className="text-yellow-400 font-medium"> automatically disabled</span> once approved.
               </p>
               <button 
                 onClick={() => router.push('/vehicles/request')}
@@ -387,7 +352,7 @@ export default function DashboardPage() {
           className="text-center"
         >
           <button 
-            onClick={() => router.push('/vehicles?history=true')}
+            onClick={() => router.push('/vehicles/history')}
             className="text-sm text-slate-400 hover:text-white transition-colors"
           >
             📜 View Vehicle History
