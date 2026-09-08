@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - master
+      - develop          # ← ADDED develop
   pull_request:
     branches:
       - main
       - master
+      - develop          # ← ADDED develop
 
 jobs:
   deploy:
