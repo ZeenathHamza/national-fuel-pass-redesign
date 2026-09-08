@@ -1,7 +1,5 @@
 # 🚀 Fuel Pass Redesign - Functions & Setup
 
----
-
 ## 📋 REDESIGN FUNCTIONS
 
 ### 1. Ownership Transfer Workflow
@@ -11,8 +9,8 @@
 
 ### 2. Phone Number Update
 - Update phone number with OTP verification
-- SMS fallback: `FUEL QR [Vehicle No]` to `xxx xxx xxxx`
-- Balance check: `FUEL BAL [Vehicle No]` to `xxx xxx xxxx`
+- SMS fallback: FUEL QR [Vehicle No] to 076 622 0000
+- Balance check: FUEL BAL [Vehicle No] to 076 622 0000
 
 ### 3. Complaint Management
 - Submit complaint with category selection
@@ -23,11 +21,11 @@
 - SMS/Email notifications on status change
 
 ### 4. Multi-Vehicle Management
-- Add multiple vehicles under one NIC
-- View all quotas in one dashboard
-- Set primary vehicle
-- Transfer vehicle ownership
-- Delete old vehicle records
+- User can only have **ONE active vehicle** at a time
+- User **requests** a new vehicle (old one automatically disabled)
+- Admin approves the request
+- Old vehicle goes to **Vehicle History**
+- User does NOT select which vehicle to fuel — it's automatic
 
 ### 5. Visual Eligibility Calendar
 - Color-coded calendar (Green = Eligible, Red = Not Eligible)
@@ -37,7 +35,7 @@
 
 ### 6. Security & Trust Center
 - Official website verification badge
-- Prominent URL display: `https://fuelpass.gov.lk`
+- Prominent URL display: https://fuelpass.gov.lk
 - SSL secure connection indicator
 - Scam warning banner
 - Report scam button
@@ -60,7 +58,15 @@
 - Announcement alerts
 - Notification bell with unread count
 
-### 9. Admin Panel
+### 9. Vehicle Request & Admin Verification
+- User submits new vehicle request with documents
+- Document upload: NIC, CR, Insurance
+- Admin verification panel
+- Admin approves or rejects requests
+- User receives notification on approval/rejection
+- **Old vehicle disabled automatically when new vehicle approved**
+
+### 10. Admin Panel
 - User search (NIC, name, address, vehicle number)
 - User profile view
 - Quota management
@@ -69,54 +75,39 @@
 - System reports
 - Announcement management
 - User management (enable/disable)
+- Verification panel for vehicle requests
 
 ---
 
 ## 🚀 STEPS TO RUN
 
 ### Step 1: Clone & Install
-
 ```bash
 git clone https://github.com/your-username/national-fuel-pass-redesign.git
 cd national-fuel-pass-redesign
 npm install
-```
 
-### Step 2: Run
-
-```bash
+Step 2: Run
+bash
 npm run dev
-```
 
-### Step 3: Open
+Step 3: Open
+http://localhost:3000
 
-**http://localhost:3000**
-
----
-
-
-## 📝 Scripts
-
-```bash
+📝 Scripts
+bash
 npm run dev      # Start development server
 npm run build    # Build for production
 npm run start    # Start production server
 npm run lint     # Run ESLint
-```
-
----
-
-## 🚨 Troubleshooting
-
-```bash
+🚨 Troubleshooting
+bash
 # Clear cache
 Remove-Item -Path ".next" -Force -Recurse
 
 # Reinstall dependencies
 rm -rf node_modules package-lock.json
 npm install
-```
 
----
 
-**Done! 🚀**
+Done! 🚀
