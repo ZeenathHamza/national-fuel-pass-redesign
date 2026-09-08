@@ -83,7 +83,7 @@
 
 ### Step 1: Clone & Install
 ```bash
-git clone https://github.com/your-username/national-fuel-pass-redesign.git
+git clone https://github.com/ZenathHamza/national-fuel-pass-redesign.git
 cd national-fuel-pass-redesign
 npm install
 
