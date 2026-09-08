@@ -5,10 +5,17 @@ on:
     branches:
       - main
       - master
+      - develop          # ← ADDED develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop          # ← ADDED develop
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
