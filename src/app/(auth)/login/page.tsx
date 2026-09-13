@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createClient } from '@/lib/supabase/client'
@@ -95,7 +96,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-500">
-            Don't have an account? <a href="/register" className="text-yellow-400 hover:underline">Register here</a>
+            Don't have an account? <Link href="/register" className="text-yellow-400 hover:underline">Register here</Link>
           </div>
         </div>
       </div>
