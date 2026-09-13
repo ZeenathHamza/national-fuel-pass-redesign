@@ -86,17 +86,41 @@ export default function QRViewerPage() {
   }, [supabase])
 
   const handleDownload = (vehicleId: string, vehicleNo: string) => {
-    const canvas = document.getElementById(`qr-${vehicleId}`) as HTMLCanvasElement
-    if (canvas) {
-      const pngUrl = canvas
-        .toDataURL("image/png")
-        .replace("image/png", "image/octet-stream")
-      const downloadLink = document.createElement("a")
-      downloadLink.href = pngUrl
-      downloadLink.download = `${vehicleNo}-FuelPass.png`
-      document.body.appendChild(downloadLink)
-      downloadLink.click()
-      document.body.removeChild(downloadLink)
+    const originalCanvas = document.getElementById(`qr-${vehicleId}`) as HTMLCanvasElement
+    if (originalCanvas) {
+      // Create a new canvas to add padding and text
+      const padding = 40;
+      const textSpace = 50;
+      
+      const newCanvas = document.createElement('canvas');
+      newCanvas.width = originalCanvas.width + (padding * 2);
+      newCanvas.height = originalCanvas.height + padding + textSpace;
+      
+      const ctx = newCanvas.getContext('2d');
+      if (ctx) {
+        // Fill white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+        
+        // Draw the QR code in the center
+        ctx.drawImage(originalCanvas, padding, padding);
+        
+        // Add text at the bottom
+        ctx.fillStyle = '#0f172a'; // slate-900 color
+        ctx.font = 'bold 22px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${vehicleNo}-PASS`, newCanvas.width / 2, newCanvas.height - 20);
+
+        const pngUrl = newCanvas
+          .toDataURL("image/png")
+          .replace("image/png", "image/octet-stream")
+        const downloadLink = document.createElement("a")
+        downloadLink.href = pngUrl
+        downloadLink.download = `${vehicleNo}-FuelPass.png`
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+      }
     }
   }
 
