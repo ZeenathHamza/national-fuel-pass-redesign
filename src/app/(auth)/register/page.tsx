@@ -28,13 +28,21 @@ export default function RegisterPage() {
     setLoading(true)
     
     try {
-      // 1. Sign up the user in Supabase Auth
+      // 1. Sign up the user in Supabase Auth and pass ALL data in metadata
+      // This allows our secure Postgres database trigger to handle the inserts
+      // bypassing the RLS error when the user doesn't have an active session yet!
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
+            nic_number: nic,
+            phone_number: mobile,
+            vehicle_no: vehicleNo,
+            vehicle_type: vehicleType,
+            fuel_type: fuelType,
+            qr_hash: btoa(`${vehicleNo}-${Date.now()}`)
           },
           // URL to redirect to after clicking the email confirmation link
           emailRedirectTo: `${window.location.origin}/auth/callback`,
@@ -42,34 +50,6 @@ export default function RegisterPage() {
       })
 
       if (authError) throw authError
-      
-      const userId = authData.user?.id
-      if (!userId) throw new Error("Registration failed: No user ID returned")
-
-      // 2. The profile is automatically created by the trigger, but we need to update it with NIC and Mobile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          nic_number: nic,
-          phone_number: mobile,
-        })
-        .eq('id', userId)
-        
-      if (profileError) throw profileError
-
-      // 3. Insert the vehicle
-      const { error: vehicleError } = await supabase
-        .from('vehicles')
-        .insert({
-          profile_id: userId,
-          registration_number: vehicleNo,
-          vehicle_type: vehicleType,
-          fuel_type: fuelType,
-          // Generate a simple hash for demo purposes
-          qr_code_hash: btoa(`${vehicleNo}-${Date.now()}`)
-        })
-        
-      if (vehicleError) throw vehicleError
       
       // If email confirmation is required, Supabase will not log them in immediately
       if (authData.user?.identities?.length === 0 || !authData.session) {
