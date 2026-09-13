@@ -6,11 +6,15 @@ import Link from 'next/link'
 import { Shield, ArrowLeft, Info, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/context/LanguageContext'
+import { translations } from '@/utils/translations'
 
 export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
+  const { language } = useLanguage()
+  const t = translations[language].homepage
 
   // Form states
   const [email, setEmail] = useState('')
@@ -118,15 +122,15 @@ export default function RegisterPage() {
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Enter the Chassis number precisely as per the Certificate of Registration of Motor Vehicles (Case Sensitive)</span>
+                    <span>{t.note1}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Vehicle registrations with Sri - to only enter the vehicle number in columns Ex: 3 Sri -1234 &rarr; <b>3 1234</b></span>
+                    <span>{t.note2}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Vehicle category to be selected as per Certificate of Registration of Motor Vehicle. Applicable categories:</span>
+                    <span>{t.note3}</span>
                   </li>
                 </ul>
 
@@ -134,8 +138,8 @@ export default function RegisterPage() {
                   <table className="w-full text-xs text-left">
                     <thead className="bg-slate-800 text-slate-300">
                       <tr>
-                        <th className="px-3 py-2 font-semibold">Category</th>
-                        <th className="px-3 py-2 font-semibold">Includes</th>
+                        <th className="px-3 py-2 font-semibold">{t.catHeader1 || 'Category'}</th>
+                        <th className="px-3 py-2 font-semibold">{t.catHeader2 || 'Includes'}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700 bg-slate-900/50">
@@ -182,31 +186,31 @@ export default function RegisterPage() {
                 <ul className="space-y-2 mt-4">
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Only one NIC/PP is allowed per vehicle and per mobile no</span>
+                    <span>{t.note4}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>At registration NIC/Name/Address does not require to match Certificate of registration ownership details</span>
+                    <span>{t.note5}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
                     <div>
-                      <span>Company and Gov vehicles/bikes can be registered under BRN category. If require to register multiple vehicles follow below instructions:</span>
+                      <span>{t.note6}</span>
                       <ul className="ml-6 mt-2 space-y-1 list-disc text-slate-400">
-                        <li>Under Nic number create a Unique code for your Institute (Numeric or Alphabetical) and this should be consistent for every vehicle profile.</li>
-                        <li>Any Commercial/Government ministry or Institution/NGO/ Clubs etc to register under BRN category.</li>
-                        <li>Select BRN and follow the registration process.</li>
-                        <li>Multiple vehicles can be registered under a single mobile number.</li>
+                        <li>{t.note6_1}</li>
+                        <li>{t.note6_2}</li>
+                        <li>{t.note6_3}</li>
+                        <li>{t.note6_4}</li>
                       </ul>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Fuel Liter allocation will be based on vehicle category. Allocation will be announced by Ministry of Power & Energy</span>
+                    <span>{t.note7}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
-                    <span>Call <b>1919</b> for any registration related assistance</span>
+                    <span>{t.note8}</span>
                   </li>
                 </ul>
               </div>

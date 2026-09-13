@@ -88,15 +88,15 @@ export default function Homepage() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Enter the Chassis number precisely as per the Certificate of Registration of Motor Vehicles (Case Sensitive)</span>
+                <span>{t.note1}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Vehicle registrations with Sri - to only enter the vehicle number in columns Ex: 3 Sri -1234 &rarr; <b className="text-white bg-slate-800 px-2 py-0.5 rounded">3 1234</b></span>
+                <span>{t.note2}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Vehicle category to be selected as per Certificate of Registration of Motor Vehicle. Applicable categories:</span>
+                <span>{t.note3}</span>
               </li>
             </ul>
 
@@ -104,8 +104,8 @@ export default function Homepage() {
               <table className="w-full text-sm text-left">
                 <thead className="bg-slate-800 text-slate-300">
                   <tr>
-                    <th className="px-4 py-3 font-bold border-b border-slate-700">Category</th>
-                    <th className="px-4 py-3 font-bold border-b border-slate-700">Includes</th>
+                    <th className="px-4 py-3 font-bold border-b border-slate-700">{t.catHeader1 || 'Category'}</th>
+                    <th className="px-4 py-3 font-bold border-b border-slate-700">{t.catHeader2 || 'Includes'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/50 bg-slate-900/50">
@@ -152,31 +152,31 @@ export default function Homepage() {
             <ul className="space-y-3 mt-6">
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Only one NIC/PP is allowed per vehicle and per mobile no</span>
+                <span>{t.note4}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>At registration NIC/Name/Address does not require to match Certificate of registration ownership details</span>
+                <span>{t.note5}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-medium text-white">Company and Gov vehicles/bikes can be registered under BRN category. If require to register multiple vehicles follow below instructions:</span>
+                  <span className="font-medium text-white">{t.note6}</span>
                   <ul className="ml-8 mt-3 space-y-2 list-disc text-slate-400">
-                    <li>Under Nic number create a Unique code for your Institute (Numeric or Alphabetical) and this should be consistent for every vehicle profile.</li>
-                    <li>Any Commercial/Government ministry or Institution/NGO/ Clubs etc to register under BRN category.</li>
-                    <li>Select BRN and follow the registration process.</li>
-                    <li>Multiple vehicles can be registered under a single mobile number.</li>
+                    <li>{t.note6_1}</li>
+                    <li>{t.note6_2}</li>
+                    <li>{t.note6_3}</li>
+                    <li>{t.note6_4}</li>
                   </ul>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Fuel Liter allocation will be based on vehicle category. Allocation will be announced by Ministry of Power & Energy</span>
+                <span>{t.note7}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Check size={18} className="text-green-400 shrink-0 mt-0.5" />
-                <span>Call <b className="text-yellow-400 text-lg">1919</b> for any registration related assistance</span>
+                <span>{t.note8}</span>
               </li>
             </ul>
           </div>
