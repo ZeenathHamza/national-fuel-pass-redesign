@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage, Language } from '@/context/LanguageContext'
 
 export default function Navbar() {
   const router = useRouter()
@@ -20,6 +21,7 @@ export default function Navbar() {
   const [activeVehicle, setActiveVehicle] = useState<any>(null)
   const [scrolled, setScrolled] = useState(false)
   const supabase = createClient()
+  const { language, setLanguage } = useLanguage()
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -133,6 +135,23 @@ export default function Navbar() {
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
+              {/* Language Switcher Buttons */}
+              <div className="flex items-center gap-1 bg-slate-800/80 border border-white/10 p-1 rounded-xl hidden sm:flex">
+                {(['en', 'si', 'ta'] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setLanguage(lang)}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                      language === lang
+                        ? 'bg-yellow-500 text-slate-950 font-bold shadow-md shadow-yellow-500/20'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                  >
+                    {lang === 'en' ? 'EN' : lang === 'si' ? 'සිං' : 'தமிழ்'}
+                  </button>
+                ))}
+              </div>
+
               {/* Notification Bell */}
               <button className="relative p-2 rounded-xl hover:bg-slate-800/50 transition-all duration-200 hover:shadow-lg hover:shadow-slate-800/30">
                 <Bell size={20} className="text-slate-400 hover:text-white transition-colors" />
@@ -224,6 +243,23 @@ export default function Navbar() {
               className="md:hidden border-t border-white/5 overflow-hidden"
             >
               <div className="px-4 py-3 space-y-1">
+                {/* Mobile Language Switcher */}
+                <div className="flex items-center gap-2 mb-4 p-2 bg-slate-800/50 rounded-xl">
+                  {(['en', 'si', 'ta'] as Language[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setLanguage(lang)}
+                      className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                        language === lang
+                          ? 'bg-yellow-500 text-slate-950 font-bold'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                      }`}
+                    >
+                      {lang === 'en' ? 'English' : lang === 'si' ? 'සිංහල' : 'தமிழ்'}
+                    </button>
+                  ))}
+                </div>
+
                 {navItems.map((item) => (
                   <Link
                     key={item.href}

@@ -53,10 +53,10 @@ export default function RegisterPage() {
       
       // If email confirmation is required, Supabase will not log them in immediately
       if (authData.user?.identities?.length === 0 || !authData.session) {
-         toast.success('Registration successful! Please check your email to confirm your account.')
+         toast.success('Registered successfully! Please check your email.')
          router.push('/login')
       } else {
-         toast.success('Registration successful! Welcome.')
+         toast.success('Registered successfully!')
          router.push('/dashboard')
       }
       
