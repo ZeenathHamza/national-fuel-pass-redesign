@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, ArrowLeft } from 'lucide-react'
+import { Shield, ArrowLeft, Info, Check, ChevronDown, ChevronUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { createClient } from '@/lib/supabase/client'
 
@@ -23,6 +23,7 @@ export default function RegisterPage() {
   const [vehicleType, setVehicleType] = useState('CAR')
   const [chassis, setChassis] = useState('')
   const [fuelType, setFuelType] = useState('Petrol')
+  const [showNotes, setShowNotes] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,6 +92,125 @@ export default function RegisterPage() {
             <span>🔒 Secure Connection</span>
             <span className="w-px h-3 bg-slate-700" />
             <span>https://fuelpass.gov.lk</span>
+          </div>
+
+          {/* Things to note prior to Registration */}
+          <div className="mb-8 bg-slate-900/80 border border-slate-700 rounded-xl overflow-hidden">
+            <button 
+              type="button"
+              onClick={() => setShowNotes(!showNotes)}
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                  <Info size={16} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-200">Things to note prior to Registration</h3>
+                  <p className="text-xs text-slate-400">Please read these important instructions carefully</p>
+                </div>
+              </div>
+              {showNotes ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
+            </button>
+
+            {showNotes && (
+              <div className="p-4 pt-0 border-t border-slate-700/50 text-sm text-slate-300 space-y-4 max-h-96 overflow-y-auto mt-4">
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Enter the Chassis number precisely as per the Certificate of Registration of Motor Vehicles (Case Sensitive)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Vehicle registrations with Sri - to only enter the vehicle number in columns Ex: 3 Sri -1234 &rarr; <b>3 1234</b></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Vehicle category to be selected as per Certificate of Registration of Motor Vehicle. Applicable categories:</span>
+                  </li>
+                </ul>
+
+                <div className="overflow-x-auto rounded-lg border border-slate-700">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-slate-800 text-slate-300">
+                      <tr>
+                        <th className="px-3 py-2 font-semibold">Category</th>
+                        <th className="px-3 py-2 font-semibold">Includes</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-700 bg-slate-900/50">
+                      <tr>
+                        <td className="px-3 py-2 font-medium">BIKE</td>
+                        <td className="px-3 py-2 text-slate-400">MOTOR CYCLE / LIGHT MOTOR CYCLE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">3WHEEL</td>
+                        <td className="px-3 py-2 text-slate-400">MOTOR TRICYCLE / MOTOR TRICYCLE VAN / INVALID CARRIAGE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">QUADRICYCLE</td>
+                        <td className="px-3 py-2 text-slate-400">QUADRICYCLE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">CAR</td>
+                        <td className="px-3 py-2 text-slate-400">MOTOR CAR / INVALID CARRIAGE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">VAN</td>
+                        <td className="px-3 py-2 text-slate-400">DUAL PURPOSE VEHICLE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">BUS</td>
+                        <td className="px-3 py-2 text-slate-400">MOTOR COACH / PRIVATE COACH / OMINI BUS / LIGHT MOTOR COACH</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">LORRY</td>
+                        <td className="px-3 py-2 text-slate-400">MOTOR LORRY / DUAL PURPOSE / LIGHT MOTOR LORRY / PRIME MOVER / AMBULANCE / HEARSE / HEAVY MOTOR LORRY</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">SPECIAL PURPOSE</td>
+                        <td className="px-3 py-2 text-slate-400">LAND VEHICLE / SPECIAL PURPOSE VEHICLE / NON AGRICULTURE LAND VEHICLE</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-2 font-medium">LAND VEHICLE</td>
+                        <td className="px-3 py-2 text-slate-400">HAND TRACTOR / AGRICULTURE LAND VEHICLE</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <ul className="space-y-2 mt-4">
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Only one NIC/PP is allowed per vehicle and per mobile no</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>At registration NIC/Name/Address does not require to match Certificate of registration ownership details</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span>Company and Gov vehicles/bikes can be registered under BRN category. If require to register multiple vehicles follow below instructions:</span>
+                      <ul className="ml-6 mt-2 space-y-1 list-disc text-slate-400">
+                        <li>Under Nic number create a Unique code for your Institute (Numeric or Alphabetical) and this should be consistent for every vehicle profile.</li>
+                        <li>Any Commercial/Government ministry or Institution/NGO/ Clubs etc to register under BRN category.</li>
+                        <li>Select BRN and follow the registration process.</li>
+                        <li>Multiple vehicles can be registered under a single mobile number.</li>
+                      </ul>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Fuel Liter allocation will be based on vehicle category. Allocation will be announced by Ministry of Power & Energy</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check size={16} className="text-green-400 shrink-0 mt-0.5" />
+                    <span>Call <b>1919</b> for any registration related assistance</span>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
