@@ -249,7 +249,7 @@ export default function VehicleRequestPage() {
                           setUploadStatus({ ...uploadStatus, [doc.key]: false })
                           setDocuments({ ...documents, [doc.key]: null })
                           setUploadedFiles({ ...uploadedFiles, [doc.key]: '' })
-                          toast.info(`${doc.label} removed`)
+                          toast(`${doc.label} removed`, { icon: 'ℹ️' })
                         }}
                         className="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors"
                       >

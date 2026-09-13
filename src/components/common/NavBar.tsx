@@ -9,6 +9,7 @@ import {
   Car, Bell, User, LogOut, ChevronDown, Settings, Users
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { createClient } from '@/lib/supabase/client'
 
 export default function Navbar() {
   const router = useRouter()
@@ -18,22 +19,41 @@ export default function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [activeVehicle, setActiveVehicle] = useState<any>(null)
   const [scrolled, setScrolled] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('fuelPassUser')
-    if (loggedIn) {
-      const userData = JSON.parse(loggedIn)
-      setUser(userData)
-      const active = userData.vehicles?.find((v: any) => v.isActive)
-      setActiveVehicle(active)
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        // Fetch profile data
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        setUser(profile || { full_name: user.email })
+        
+        // Fetch active vehicle
+        const { data: vehicles } = await supabase
+          .from('vehicles')
+          .select('*')
+          .eq('profile_id', user.id)
+          .limit(1)
+          
+        if (vehicles && vehicles.length > 0) {
+          setActiveVehicle({ number: vehicles[0].registration_number, type: vehicles[0].vehicle_type })
+        }
+      }
     }
+    fetchUser()
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [supabase])
 
   const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -46,13 +66,18 @@ export default function Navbar() {
 
   const isActive = (href: string) => pathname === href
 
-  const handleLogout = () => {
-    localStorage.removeItem('fuelPassUser')
-    toast.success('Logged out successfully')
-    router.push('/login')
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      toast.error('Failed to logout')
+    } else {
+      toast.success('Logged out successfully')
+      router.push('/login')
+    }
   }
 
   const getInitials = (name: string) => {
+    if (!name) return 'U'
     return name
       .split(' ')
       .map((n) => n[0])
@@ -122,11 +147,11 @@ export default function Navbar() {
                 >
                   <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-500/30 to-yellow-500/10 flex items-center justify-center shadow-lg shadow-yellow-500/20">
                     <span className="text-sm font-bold text-yellow-400">
-                      {user ? getInitials(user.name) : 'U'}
+                      {user ? getInitials(user.full_name) : 'U'}
                     </span>
                   </div>
                   <span className="text-sm text-white hidden sm:block font-medium">
-                    {user?.name?.split(' ')[0] || 'User'}
+                    {user?.full_name?.split(' ')[0] || 'User'}
                   </span>
                   <ChevronDown 
                     size={16} 
@@ -145,7 +170,7 @@ export default function Navbar() {
                       className="absolute right-0 mt-3 w-64 bg-slate-800/95 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl shadow-slate-900/50 overflow-hidden"
                     >
                       <div className="p-4 border-b border-white/5">
-                        <p className="font-bold text-white">{user?.name || 'User'}</p>
+                        <p className="font-bold text-white">{user?.full_name || 'User'}</p>
                         <p className="text-sm text-slate-400">
                           {activeVehicle?.number || 'No vehicle'} • {activeVehicle?.type || 'N/A'}
                         </p>
@@ -155,7 +180,7 @@ export default function Navbar() {
                         <ProfileLink href="/profile" icon={User} label="My Profile" />
                         <ProfileLink href="/vehicles" icon={Car} label="My Vehicles" />
                         <ProfileLink href="/settings" icon={Settings} label="Settings" />
-                        {user?.isAdmin && (
+                        {user?.role === 'admin' && (
                           <ProfileLink href="/admin" icon={Users} label="Admin Panel" />
                         )}
                         <div className="border-t border-white/5 pt-1 mt-1">

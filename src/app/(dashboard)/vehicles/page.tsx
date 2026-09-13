@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Plus, Trash2, CheckCircle, AlertCircle, History, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-export default function VehiclesPage() {
+function VehiclesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const showHistory = searchParams.get('history') === 'true'
@@ -286,5 +286,19 @@ export default function VehiclesPage() {
         )}
       </div>
     </div>
+  )
+}
+
+import { Suspense } from 'react'
+
+export default function VehiclesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-yellow-500"></div>
+      </div>
+    }>
+      <VehiclesContent />
+    </Suspense>
   )
 }
