@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Download, Share2, ShieldCheck, Car, Bike, Truck, Bus } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
 import { createClient } from '@/lib/supabase/client'
-import { QRCodeSVG } from 'qrcode.react'
+import { QRCodeCanvas } from 'qrcode.react'
 
 export default function QRViewerPage() {
   const { language } = useLanguage()
@@ -85,6 +85,37 @@ export default function QRViewerPage() {
     fetchData()
   }, [supabase])
 
+  const handleDownload = (vehicleId: string, vehicleNo: string) => {
+    const canvas = document.getElementById(`qr-${vehicleId}`) as HTMLCanvasElement
+    if (canvas) {
+      const pngUrl = canvas
+        .toDataURL("image/png")
+        .replace("image/png", "image/octet-stream")
+      const downloadLink = document.createElement("a")
+      downloadLink.href = pngUrl
+      downloadLink.download = `${vehicleNo}-FuelPass.png`
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      document.body.removeChild(downloadLink)
+    }
+  }
+
+  const handleShare = async (vehicleNo: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'National Fuel Pass',
+          text: `My Fuel Pass for ${vehicleNo}`,
+          url: window.location.origin,
+        })
+      } catch (error) {
+        console.log('Error sharing', error)
+      }
+    } else {
+      alert("Sharing is not supported on this browser.")
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -112,9 +143,9 @@ export default function QRViewerPage() {
             {vehicles.map((vehicle) => (
               <div key={vehicle.id} className="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-6 relative overflow-hidden">
                 
-                {/* Background Silhouette */}
-                <div className="absolute -bottom-10 -right-10 opacity-[0.03] text-white pointer-events-none transform -rotate-12">
-                  {getVehicleIcon(vehicle.type, { size: 300 })}
+                {/* Background Silhouette (Centered) */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] text-white pointer-events-none">
+                  {getVehicleIcon(vehicle.type, { size: 280 })}
                 </div>
 
                 <div className="relative z-10 flex justify-between items-start">
@@ -128,7 +159,8 @@ export default function QRViewerPage() {
 
                 {/* Real QR Container */}
                 <div className="relative z-10 bg-white p-4 sm:p-6 rounded-2xl shadow-inner flex flex-col items-center justify-center mx-auto w-fit border-4 border-yellow-500/30">
-                  <QRCodeSVG 
+                  <QRCodeCanvas 
+                    id={`qr-${vehicle.id}`}
                     value={vehicle.qrHash} 
                     size={180} 
                     level="H" 
@@ -156,10 +188,16 @@ export default function QRViewerPage() {
 
                 {/* Action Buttons */}
                 <div className="relative z-10 flex gap-3 pt-2">
-                  <button className="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-yellow-500/20">
+                  <button 
+                    onClick={() => handleDownload(vehicle.id, vehicle.number)}
+                    className="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-yellow-500/20"
+                  >
                     <Download size={18} /> {t.download}
                   </button>
-                  <button className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl text-sm flex items-center justify-center gap-2 transition-all border border-white/10">
+                  <button 
+                    onClick={() => handleShare(vehicle.number)}
+                    className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl text-sm flex items-center justify-center gap-2 transition-all border border-white/10"
+                  >
                     <Share2 size={18} />
                   </button>
                 </div>

@@ -51,7 +51,7 @@ export default function VehiclesPage() {
 
         if (userVehicles) {
           // Map db fields to component fields
-          const mappedVehicles = userVehicles.map((v, index) => {
+          const mappedVehicles = userVehicles.map((v) => {
             let defaultAllocated = 20
             if (v.vehicle_type === 'MOTORCYCLE') defaultAllocated = 8
             else if (v.vehicle_type === 'THREE_WHEELER') defaultAllocated = 20
@@ -64,8 +64,7 @@ export default function VehiclesPage() {
               number: v.registration_number,
               type: v.vehicle_type,
               fuelType: v.fuel_type,
-              quota: defaultAllocated,
-              isActive: index === 0 // Making newest vehicle active for now
+              quota: defaultAllocated
             }
           })
           setVehicles(mappedVehicles)
@@ -158,14 +157,10 @@ export default function VehiclesPage() {
             vehicles.map((v) => (
               <div 
                 key={v.id} 
-                className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${
-                  v.isActive 
-                    ? 'bg-slate-900 border-yellow-500/40 shadow-xl shadow-yellow-500/5' 
-                    : 'bg-slate-900/60 border-white/10 opacity-80'
-                }`}
+                className="p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden bg-slate-900 border-yellow-500/40 shadow-xl shadow-yellow-500/5"
               >
-                {/* Background Silhouette */}
-                <div className="absolute -bottom-10 -right-10 opacity-[0.03] text-white pointer-events-none transform -rotate-12">
+                {/* Background Silhouette (Centered) */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] text-white pointer-events-none">
                   {getVehicleIcon(v.type, { size: 180 })}
                 </div>
 
@@ -179,15 +174,9 @@ export default function VehiclesPage() {
                       <p className="text-xs text-slate-400">{v.type}</p>
                     </div>
                   </div>
-                  {v.isActive ? (
-                    <span className="inline-flex items-center gap-1 text-green-400 font-medium text-xs bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
-                      <CheckCircle2 size={12} /> {t.active}
-                    </span>
-                  ) : (
-                    <button className="text-xs text-slate-400 hover:text-white underline">
-                      {t.selectActive}
-                    </button>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-green-400 font-medium text-xs bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
+                    <CheckCircle2 size={12} /> {t.active}
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-sm relative z-10">

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
   QrCode, Car, Fuel, ArrowRight, Clock, 
-  CheckCircle2, ChevronRight, Headphones, ShieldCheck, Bike, Truck, Bus
+  CheckCircle2, ChevronRight, Headphones, ShieldCheck, Bike, Truck, Bus, ChevronDown
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const supabase = createClient()
 
   const [user, setUser] = useState<any>(null)
+  const [vehicles, setVehicles] = useState<any[]>([])
   const [activeVehicle, setActiveVehicle] = useState<any>(null)
   const [quota, setQuota] = useState<{ allocated: number, used: number } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -29,6 +30,30 @@ export default function DashboardPage() {
       case 'VAN': return <Truck {...props} />;
       case 'THREE_WHEELER': return <Car {...props} />;
       default: return <Car {...props} />;
+    }
+  }
+
+  const fetchQuotaForVehicle = async (vehicle: any) => {
+    // Calculate default quota based on type
+    let defaultAllocated = 20
+    if (vehicle.vehicle_type === 'MOTORCYCLE') defaultAllocated = 8
+    else if (vehicle.vehicle_type === 'THREE_WHEELER') defaultAllocated = 20
+    else if (vehicle.vehicle_type === 'VAN') defaultAllocated = 50
+    else if (vehicle.vehicle_type === 'BUS') defaultAllocated = 100
+    else if (vehicle.vehicle_type === 'LORRY') defaultAllocated = 200
+    
+    // Fetch Quota
+    const { data: quotaData } = await supabase
+      .from('fuel_quotas')
+      .select('*')
+      .eq('vehicle_id', vehicle.id)
+      .single()
+
+    if (quotaData) {
+      setQuota({ allocated: Number(quotaData.allocated_quota), used: Number(quotaData.used_quota) })
+    } else {
+      // Fallback default
+      setQuota({ allocated: defaultAllocated, used: 0 })
     }
   }
 
@@ -49,37 +74,17 @@ export default function DashboardPage() {
           setUser(profile || { full_name: user.email })
 
           // Fetch Vehicles
-          const { data: vehicles } = await supabase
+          const { data: userVehicles } = await supabase
             .from('vehicles')
             .select('*')
             .eq('profile_id', user.id)
+            .order('created_at', { ascending: false }) // latest first
             
-          if (vehicles && vehicles.length > 0) {
-            // Pick first vehicle as active for now
-            const currentVehicle = vehicles[0]
+          if (userVehicles && userVehicles.length > 0) {
+            setVehicles(userVehicles)
+            const currentVehicle = userVehicles[0]
             setActiveVehicle(currentVehicle)
-
-            // Calculate default quota based on type if no db record
-            let defaultAllocated = 20
-            if (currentVehicle.vehicle_type === 'MOTORCYCLE') defaultAllocated = 8
-            else if (currentVehicle.vehicle_type === 'THREE_WHEELER') defaultAllocated = 20
-            else if (currentVehicle.vehicle_type === 'VAN') defaultAllocated = 50
-            else if (currentVehicle.vehicle_type === 'BUS') defaultAllocated = 100
-            else if (currentVehicle.vehicle_type === 'LORRY') defaultAllocated = 200
-            
-            // Fetch Quota
-            const { data: quotaData } = await supabase
-              .from('fuel_quotas')
-              .select('*')
-              .eq('vehicle_id', currentVehicle.id)
-              .single()
-
-            if (quotaData) {
-              setQuota({ allocated: Number(quotaData.allocated_quota), used: Number(quotaData.used_quota) })
-            } else {
-              // Fallback default
-              setQuota({ allocated: defaultAllocated, used: 0 })
-            }
+            await fetchQuotaForVehicle(currentVehicle)
           }
         }
       } catch (error) {
@@ -91,6 +96,14 @@ export default function DashboardPage() {
 
     fetchData()
   }, [supabase])
+
+  const handleVehicleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const v = vehicles.find(v => v.id === e.target.value)
+    if (v) {
+      setActiveVehicle(v)
+      await fetchQuotaForVehicle(v)
+    }
+  }
 
   if (loading) {
     return (
@@ -121,13 +134,29 @@ export default function DashboardPage() {
             </h1>
             <p className="text-slate-400 text-sm mt-1">{t.subtitle}</p>
           </div>
-          <div className="flex items-center gap-3 bg-slate-800/80 border border-white/10 px-4 py-2.5 rounded-2xl w-fit">
-            {activeVehicle ? getVehicleIcon(activeVehicle.vehicle_type, { size: 20, className: "text-yellow-400" }) : <Car className="text-yellow-400" size={20} />}
-            <div>
-              <p className="text-xs text-slate-400">{t.activeVehicle}</p>
-              <p className="text-sm font-bold text-white">{vehicleNo} <span className="text-xs text-slate-400 font-normal">({vehicleType})</span></p>
+          
+          {vehicles.length > 0 && (
+            <div className="relative group">
+              <div className="flex items-center gap-3 bg-slate-800/80 border border-white/10 px-4 py-2.5 rounded-2xl w-fit cursor-pointer hover:border-yellow-500/50 transition-all">
+                {activeVehicle ? getVehicleIcon(activeVehicle.vehicle_type, { size: 20, className: "text-yellow-400" }) : <Car className="text-yellow-400" size={20} />}
+                <div>
+                  <p className="text-xs text-slate-400">{t.activeVehicle}</p>
+                  <p className="text-sm font-bold text-white flex items-center gap-1">
+                    {vehicleNo} <ChevronDown size={14} className="text-slate-400" />
+                  </p>
+                </div>
+              </div>
+              <select 
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                value={activeVehicle?.id || ''}
+                onChange={handleVehicleChange}
+              >
+                {vehicles.map(v => (
+                  <option key={v.id} value={v.id}>{v.registration_number}</option>
+                ))}
+              </select>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Quota Progress Overview */}
@@ -171,9 +200,9 @@ export default function DashboardPage() {
 
           {/* Quick Vehicle Info Card */}
           <div className="bg-slate-900/90 p-6 rounded-3xl border border-white/10 shadow-xl flex flex-col justify-between relative overflow-hidden">
-            {/* Silhouette */}
+            {/* Silhouette (Centered) */}
             {activeVehicle && (
-              <div className="absolute -bottom-8 -right-8 opacity-5 text-white pointer-events-none transform -rotate-12 z-0">
+              <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] text-white pointer-events-none">
                 {getVehicleIcon(activeVehicle.vehicle_type, { size: 160 })}
               </div>
             )}
