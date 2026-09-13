@@ -9,31 +9,94 @@ import {
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
+import { createClient } from '@/lib/supabase/client'
 
 export default function DashboardPage() {
   const { language } = useLanguage()
   const t = translations[language]?.dashboard || translations.en.dashboard
+  const supabase = createClient()
 
   const [user, setUser] = useState<any>(null)
   const [activeVehicle, setActiveVehicle] = useState<any>(null)
+  const [quota, setQuota] = useState<{ allocated: number, used: number } | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('fuelPassUser')
-    if (loggedIn) {
-      const userData = JSON.parse(loggedIn)
-      setUser(userData)
-      const active = userData.vehicles?.find((v: any) => v.isActive) || userData.vehicles?.[0]
-      setActiveVehicle(active)
-    }
-  }, [])
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (user) {
+          // Fetch Profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+            
+          setUser(profile || { full_name: user.email })
 
-  // Dummy fallback display values if user data doesn't exist
-  const vehicleNo = activeVehicle?.number || 'CAD-1234'
-  const vehicleType = activeVehicle?.type || 'Car'
-  const fuelType = activeVehicle?.fuelType || 'Petrol 92'
-  const allocated = activeVehicle?.allocatedQuota || 20
-  const remaining = activeVehicle?.remainingQuota || 12
-  const used = allocated - remaining
+          // Fetch Vehicles
+          const { data: vehicles } = await supabase
+            .from('vehicles')
+            .select('*')
+            .eq('profile_id', user.id)
+            
+          if (vehicles && vehicles.length > 0) {
+            // Pick first vehicle as active for now
+            const currentVehicle = vehicles[0]
+            setActiveVehicle(currentVehicle)
+
+            // Calculate default quota based on type if no db record
+            let defaultAllocated = 20
+            if (currentVehicle.vehicle_type === 'MOTORCYCLE') defaultAllocated = 8
+            else if (currentVehicle.vehicle_type === 'THREE_WHEELER') defaultAllocated = 20
+            else if (currentVehicle.vehicle_type === 'VAN') defaultAllocated = 50
+            else if (currentVehicle.vehicle_type === 'BUS') defaultAllocated = 100
+            else if (currentVehicle.vehicle_type === 'LORRY') defaultAllocated = 200
+            
+            // Fetch Quota
+            const { data: quotaData } = await supabase
+              .from('fuel_quotas')
+              .select('*')
+              .eq('vehicle_id', currentVehicle.id)
+              .single()
+
+            if (quotaData) {
+              setQuota({ allocated: Number(quotaData.allocated_quota), used: Number(quotaData.used_quota) })
+            } else {
+              // Fallback default
+              setQuota({ allocated: defaultAllocated, used: 0 })
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  // Fallback display values
+  const vehicleNo = activeVehicle?.registration_number || 'No Vehicle'
+  const vehicleType = activeVehicle?.vehicle_type || 'N/A'
+  const fuelType = activeVehicle?.fuel_type || 'N/A'
+  const allocated = quota?.allocated || 0
+  const used = quota?.used || 0
+  const remaining = allocated - used
+  const firstName = user?.full_name?.split(' ')[0] || 'User'
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 md:p-8">
@@ -43,7 +106,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-900/80 to-slate-900 p-6 rounded-3xl border border-white/10 shadow-2xl">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-              {t.welcome}, <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">{user?.name || 'User'}</span> 👋
+              {t.welcome}, <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">{firstName}</span> 👋
             </h1>
             <p className="text-slate-400 text-sm mt-1">{t.subtitle}</p>
           </div>
@@ -80,7 +143,7 @@ export default function DashboardPage() {
               <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/5">
                 <div 
                   className="h-full bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full transition-all duration-500"
-                  style={{ width: `${(remaining / allocated) * 100}%` }}
+                  style={{ width: `${allocated > 0 ? (remaining / allocated) * 100 : 0}%` }}
                 />
               </div>
               <div className="flex justify-between text-xs text-slate-400 font-medium pt-1">
@@ -109,13 +172,19 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-between py-2 border-b border-white/5">
                   <span className="text-slate-400">{t.chassisNumber}</span>
-                  <span className="font-mono text-slate-300">****5892</span>
+                  <span className="font-mono text-slate-300">****</span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-slate-400">{t.status}</span>
-                  <span className="inline-flex items-center gap-1 text-green-400 font-medium text-xs bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
-                    <CheckCircle2 size={12} /> Active
-                  </span>
+                  {activeVehicle ? (
+                    <span className="inline-flex items-center gap-1 text-green-400 font-medium text-xs bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
+                      <CheckCircle2 size={12} /> Active
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-slate-400 font-medium text-xs bg-slate-500/10 px-2.5 py-1 rounded-full border border-slate-500/20">
+                      None
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -186,6 +255,7 @@ export default function DashboardPage() {
         <div className="bg-slate-900/80 p-6 rounded-3xl border border-white/10">
           <h2 className="text-lg font-bold text-white mb-4">{t.recentActivity}</h2>
           <div className="divide-y divide-white/5">
+            {/* Keeping dummy transactions for now as transactions table is empty initially */}
             <div className="py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-yellow-400">
