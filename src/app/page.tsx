@@ -5,12 +5,16 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Info, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { useLanguage } from '@/context/LanguageContext'
+import { translations } from '@/utils/translations'
 
 export default function Homepage() {
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [showNotes, setShowNotes] = useState(false)
+  const { language } = useLanguage()
+  const t = translations[language].homepage
 
   useEffect(() => {
     const checkUser = async () => {
@@ -41,20 +45,20 @@ export default function Homepage() {
           <span className="text-4xl">⛽</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3">
-          National Fuel Pass
+          {t.title}
         </h1>
         <p className="text-lg text-slate-400 mb-8">
-          Manage your fuel quota, generate QR codes, and track your vehicles.
+          {t.subtitle}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
           <Link href="/login">
-            <button className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all">
-              Login to Account &rarr;
+            <button className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-8 rounded-lg transition-all w-full sm:w-auto">
+              {t.loginBtn} &rarr;
             </button>
           </Link>
           <Link href="/register">
-            <button className="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-8 rounded-lg transition-all border border-slate-600">
-              Register New Vehicle
+            <button className="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-8 rounded-lg transition-all border border-slate-600 w-full sm:w-auto">
+              {t.registerBtn}
             </button>
           </Link>
         </div>
@@ -72,8 +76,8 @@ export default function Homepage() {
               <Info size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-200">Things to note prior to Registration</h3>
-              <p className="text-sm text-slate-400">Click to view instructions and vehicle categories</p>
+              <h3 className="text-lg font-bold text-slate-200">{t.notesTitle}</h3>
+              <p className="text-sm text-slate-400">{t.notesSubtitle}</p>
             </div>
           </div>
           {showNotes ? <ChevronUp size={24} className="text-slate-400" /> : <ChevronDown size={24} className="text-slate-400" />}

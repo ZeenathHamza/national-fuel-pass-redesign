@@ -2,6 +2,14 @@
 
 export const translations = {
   en: {
+    homepage: {
+      title: 'National Fuel Pass',
+      subtitle: 'Manage your fuel quota, generate QR codes, and track your vehicles.',
+      loginBtn: 'Login to Account',
+      registerBtn: 'Register New Vehicle',
+      notesTitle: 'Things to note prior to Registration',
+      notesSubtitle: 'Click to view instructions and vehicle categories'
+    },
     dashboard: {
       welcome: 'Welcome back',
       subtitle: 'Manage your vehicle fuel quota and active pass',
@@ -102,6 +110,14 @@ export const translations = {
     }
   },
   si: {
+    homepage: {
+      title: 'ජාතික ඉන්ධන බලපත්‍රය',
+      subtitle: 'ඔබගේ ඉන්ධන කෝටාව කළමනාකරණය කරන්න, QR කේත ලබාගන්න, සහ වාහන නිරීක්ෂණය කරන්න.',
+      loginBtn: 'ගිණුමට පිවිසෙන්න',
+      registerBtn: 'නව වාහනයක් ලියාපදිංචි කරන්න',
+      notesTitle: 'ලියාපදිංචි වීමට පෙර සැලකිය යුතු කරුණු',
+      notesSubtitle: 'උපදෙස් සහ වාහන කාණ්ඩ බැලීමට මෙතන ක්ලික් කරන්න'
+    },
     dashboard: {
       welcome: 'ආයුබෝවන්',
       subtitle: 'ඔබගේ වාහන ඉන්ධන කෝටාව සහ සක්‍රිය ගිණුම කළමනාකරණය කරන්න',
@@ -202,6 +218,14 @@ export const translations = {
     }
   },
   ta: {
+    homepage: {
+      title: 'தேசிய எரிபொருள் பாஸ்',
+      subtitle: 'உங்கள் எரிபொருள் ஒதுக்கீட்டை நிர்வகிக்கவும், QR குறியீடுகளை உருவாக்கவும், மற்றும் உங்கள் வாகனங்களை கண்காணிக்கவும்.',
+      loginBtn: 'கணக்கில் உள்நுழையவும்',
+      registerBtn: 'புதிய வாகனத்தைப் பதிவுசெய்க',
+      notesTitle: 'பதிவு செய்வதற்கு முன் கவனிக்க வேண்டியவை',
+      notesSubtitle: 'வழிமுறைகள் மற்றும் வாகன வகைகளைக் காண இங்கே கிளிக் செய்யவும்'
+    },
     dashboard: {
       welcome: 'வரவேற்கிறோம்',
       subtitle: 'உங்கள் வாகன எரிபொருள் ஒதுக்கீடு மற்றும் செயலில் உள்ள பாஸை நிர்வகிக்கவும்',
