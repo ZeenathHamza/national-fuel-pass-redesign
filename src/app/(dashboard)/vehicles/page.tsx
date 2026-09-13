@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Car, Plus, Fuel, ShieldCheck, CheckCircle2, X } from 'lucide-react'
+import { Car, Plus, Fuel, ShieldCheck, CheckCircle2, X, Bike, Truck, Bus } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
 import { createClient } from '@/lib/supabase/client'
@@ -24,6 +24,17 @@ export default function VehiclesPage() {
   const [vehicleType, setVehicleType] = useState('CAR')
   const [fuelType, setFuelType] = useState('Petrol')
   const [chassis, setChassis] = useState('')
+
+  const getVehicleIcon = (type: string, props: any = {}) => {
+    switch (type) {
+      case 'MOTORCYCLE': return <Bike {...props} />;
+      case 'BUS': return <Bus {...props} />;
+      case 'LORRY': return <Truck {...props} />;
+      case 'VAN': return <Truck {...props} />;
+      case 'THREE_WHEELER': return <Car {...props} />;
+      default: return <Car {...props} />;
+    }
+  }
 
   const fetchVehicles = async () => {
     try {
@@ -153,10 +164,15 @@ export default function VehiclesPage() {
                     : 'bg-slate-900/60 border-white/10 opacity-80'
                 }`}
               >
-                <div className="flex justify-between items-start mb-4">
+                {/* Background Silhouette */}
+                <div className="absolute -bottom-10 -right-10 opacity-[0.03] text-white pointer-events-none transform -rotate-12">
+                  {getVehicleIcon(v.type, { size: 180 })}
+                </div>
+
+                <div className="flex justify-between items-start mb-4 relative z-10">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400">
-                      <Car size={24} />
+                      {getVehicleIcon(v.type, { size: 24 })}
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{v.number}</h3>
@@ -174,7 +190,7 @@ export default function VehiclesPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-sm">
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-sm relative z-10">
                   <div>
                     <p className="text-xs text-slate-500">{t.fuel}</p>
                     <p className="font-semibold text-slate-200 mt-0.5">{v.fuelType}</p>

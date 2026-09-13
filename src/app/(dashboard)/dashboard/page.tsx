@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { 
   QrCode, Car, Fuel, ArrowRight, Clock, 
-  CheckCircle2, ChevronRight, Headphones, ShieldCheck 
+  CheckCircle2, ChevronRight, Headphones, ShieldCheck, Bike, Truck, Bus
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
@@ -20,6 +20,17 @@ export default function DashboardPage() {
   const [activeVehicle, setActiveVehicle] = useState<any>(null)
   const [quota, setQuota] = useState<{ allocated: number, used: number } | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const getVehicleIcon = (type: string, props: any = {}) => {
+    switch (type) {
+      case 'MOTORCYCLE': return <Bike {...props} />;
+      case 'BUS': return <Bus {...props} />;
+      case 'LORRY': return <Truck {...props} />;
+      case 'VAN': return <Truck {...props} />;
+      case 'THREE_WHEELER': return <Car {...props} />;
+      default: return <Car {...props} />;
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,7 +122,7 @@ export default function DashboardPage() {
             <p className="text-slate-400 text-sm mt-1">{t.subtitle}</p>
           </div>
           <div className="flex items-center gap-3 bg-slate-800/80 border border-white/10 px-4 py-2.5 rounded-2xl w-fit">
-            <Car className="text-yellow-400" size={20} />
+            {activeVehicle ? getVehicleIcon(activeVehicle.vehicle_type, { size: 20, className: "text-yellow-400" }) : <Car className="text-yellow-400" size={20} />}
             <div>
               <p className="text-xs text-slate-400">{t.activeVehicle}</p>
               <p className="text-sm font-bold text-white">{vehicleNo} <span className="text-xs text-slate-400 font-normal">({vehicleType})</span></p>
@@ -133,13 +144,13 @@ export default function DashboardPage() {
                   <span className="text-lg text-slate-300 font-semibold">/ {allocated} {t.liters}</span>
                 </div>
               </div>
-              <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400">
+              <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 relative z-10">
                 <Fuel size={28} />
               </div>
             </div>
 
             {/* Quota Progress Bar */}
-            <div className="space-y-2">
+            <div className="space-y-2 relative z-10">
               <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/5">
                 <div 
                   className="h-full bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full transition-all duration-500"
@@ -152,15 +163,22 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-white/5 flex items-center gap-2 text-xs text-slate-400">
+            <div className="mt-6 pt-6 border-t border-white/5 flex items-center gap-2 text-xs text-slate-400 relative z-10">
               <Clock size={16} className="text-yellow-400" />
               <span>{t.nextReset}: <strong className="text-slate-200">Sunday Midnight (12:00 AM)</strong></span>
             </div>
           </div>
 
           {/* Quick Vehicle Info Card */}
-          <div className="bg-slate-900/90 p-6 rounded-3xl border border-white/10 shadow-xl flex flex-col justify-between">
-            <div>
+          <div className="bg-slate-900/90 p-6 rounded-3xl border border-white/10 shadow-xl flex flex-col justify-between relative overflow-hidden">
+            {/* Silhouette */}
+            {activeVehicle && (
+              <div className="absolute -bottom-8 -right-8 opacity-5 text-white pointer-events-none transform -rotate-12 z-0">
+                {getVehicleIcon(activeVehicle.vehicle_type, { size: 160 })}
+              </div>
+            )}
+
+            <div className="relative z-10">
               <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
                 <ShieldCheck className="text-green-400" size={20} />
                 {t.activeVehicle}
@@ -191,7 +209,7 @@ export default function DashboardPage() {
 
             <Link 
               href="/vehicles"
-              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 transition-all"
+              className="mt-6 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 transition-all relative z-10"
             >
               {t.myVehicles} <ChevronRight size={14} />
             </Link>

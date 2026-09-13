@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Download, Share2, ShieldCheck, Car } from 'lucide-react'
+import { Download, Share2, ShieldCheck, Car, Bike, Truck, Bus } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { translations } from '@/utils/translations'
 import { createClient } from '@/lib/supabase/client'
@@ -14,6 +14,17 @@ export default function QRViewerPage() {
 
   const [vehicles, setVehicles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  const getVehicleIcon = (type: string, props: any = {}) => {
+    switch (type) {
+      case 'MOTORCYCLE': return <Bike {...props} />;
+      case 'BUS': return <Bus {...props} />;
+      case 'LORRY': return <Truck {...props} />;
+      case 'VAN': return <Truck {...props} />;
+      case 'THREE_WHEELER': return <Car {...props} />;
+      default: return <Car {...props} />;
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,12 +111,23 @@ export default function QRViewerPage() {
           <div className="space-y-8">
             {vehicles.map((vehicle) => (
               <div key={vehicle.id} className="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-6 relative overflow-hidden">
-                <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full font-bold">
-                  <ShieldCheck size={14} /> {t.activePass}
+                
+                {/* Background Silhouette */}
+                <div className="absolute -bottom-10 -right-10 opacity-[0.03] text-white pointer-events-none transform -rotate-12">
+                  {getVehicleIcon(vehicle.type, { size: 300 })}
+                </div>
+
+                <div className="relative z-10 flex justify-between items-start">
+                  <div className="inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-400 text-xs px-3 py-1 rounded-full font-bold">
+                    <ShieldCheck size={14} /> {t.activePass}
+                  </div>
+                  <div className="text-slate-500 bg-slate-800/50 p-2 rounded-xl">
+                    {getVehicleIcon(vehicle.type, { size: 20 })}
+                  </div>
                 </div>
 
                 {/* Real QR Container */}
-                <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-inner flex flex-col items-center justify-center mx-auto w-fit border-4 border-yellow-500/30">
+                <div className="relative z-10 bg-white p-4 sm:p-6 rounded-2xl shadow-inner flex flex-col items-center justify-center mx-auto w-fit border-4 border-yellow-500/30">
                   <QRCodeSVG 
                     value={vehicle.qrHash} 
                     size={180} 
@@ -115,7 +137,7 @@ export default function QRViewerPage() {
                   <p className="text-[10px] font-mono text-slate-500 mt-3 font-bold tracking-widest">{vehicle.number}-PASS</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                <div className="relative z-10 grid grid-cols-3 gap-2 bg-slate-800/50 p-4 rounded-2xl border border-white/5">
                   <div className="text-center border-r border-white/5">
                     <p className="text-[10px] text-slate-400 uppercase tracking-wider">{t.vehicleNo}</p>
                     <p className="text-sm font-bold text-white mt-1">{vehicle.number}</p>
@@ -130,10 +152,10 @@ export default function QRViewerPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-500">{t.scanNotice}</p>
+                <p className="relative z-10 text-xs text-slate-500">{t.scanNotice}</p>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-2">
+                <div className="relative z-10 flex gap-3 pt-2">
                   <button className="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-yellow-500/20">
                     <Download size={18} /> {t.download}
                   </button>
