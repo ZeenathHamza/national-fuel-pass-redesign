@@ -245,10 +245,13 @@ export default function VehiclesPage() {
                 </div>
                 <div>
                   <label className="text-xs uppercase tracking-wider text-slate-400 block mb-2">Chassis Number</label>
+                  <p className="text-[10px] text-slate-500 mb-2 leading-relaxed">
+                    Pay attention to number 0 vs letter O, number 5 vs letter S and number 8 vs letter S.
+                  </p>
                   <input 
                     value={chassis} 
                     onChange={e => setChassis(e.target.value)} 
-                    placeholder="e.g. JF1GJ8A" 
+                    placeholder="Ex: N786543322" 
                     className="w-full bg-slate-950 text-white p-3 sm:p-4 rounded-xl border border-slate-700 focus:border-yellow-500 outline-none uppercase" 
                     required 
                   />

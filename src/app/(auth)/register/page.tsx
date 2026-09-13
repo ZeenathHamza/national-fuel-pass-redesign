@@ -153,8 +153,10 @@ export default function RegisterPage() {
               <div className="grid sm:grid-cols-2 gap-4 mt-4">
                 <div>
                   <label className="text-xs uppercase tracking-wider text-slate-400 block mb-2">Chassis Number</label>
-                  <input value={chassis} onChange={e => setChassis(e.target.value)} placeholder="e.g. JF1GJ8A" className="w-full bg-slate-900 text-white p-4 rounded-lg border border-slate-600 focus:border-yellow-500 outline-none uppercase" required />
-                  <p className="text-[10px] text-slate-500 mt-1">⚠️ Case sensitive</p>
+                  <p className="text-[10px] text-slate-500 mb-2 leading-relaxed">
+                    Pay attention to number 0 vs letter O, number 5 vs letter S and number 8 vs letter S.
+                  </p>
+                  <input value={chassis} onChange={e => setChassis(e.target.value)} placeholder="Ex: N786543322" className="w-full bg-slate-900 text-white p-4 rounded-lg border border-slate-600 focus:border-yellow-500 outline-none uppercase" required />
                 </div>
                 <div>
                   <label className="text-xs uppercase tracking-wider text-slate-400 block mb-2">Fuel Type</label>
